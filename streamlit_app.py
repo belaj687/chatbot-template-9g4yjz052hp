@@ -1,29 +1,38 @@
 import streamlit as st
 from openai import OpenAI
+from llama_index.llms.openai import OpenAI
 
-# Show title and description.
-st.title("💬 Chatbot")
-st.write(
-    "This is a simple chatbot that uses OpenAI's GPT-3.5 model to generate responses. "
-    "To use this app, you need to provide an OpenAI API key, which you can get [here](https://platform.openai.com/account/api-keys). "
-    "You can also learn how to build this app step by step by [following our tutorial](https://docs.streamlit.io/develop/tutorials/llms/build-conversational-apps)."
-)
+# Den Titel der Webseite und die Beschreibung anpassen
+st.set_page_config(page_title="DIGITAL@School Chatbot", page_icon="💭", layout="centered", initial_sidebar_state="expanded", menu_items=None)
+st.title("DIGITAL@School-Assistent 🤖🏫")
+st.info("Schau Dir die Anleitung zu diesem Chatbot hier an", icon="📃")
+st.write("Hallo! Ich bin dein persönlicher DIGITAL@School Chatbot für Fragen rund um DIGITAL@School. Für diesen Chatbot benötigst Du einen OpenAI API-Schlüssel, den Du unten eingeben kannst.")
 
-# Ask user for their OpenAI API key via `st.text_input`.
+
+
+# Benutzer nach dem OpenAI API Schlüssel fragen durch `st.text_input`.
 # Alternatively, you can store the API key in `./.streamlit/secrets.toml` and access it
 # via `st.secrets`, see https://docs.streamlit.io/develop/concepts/connections/secrets-management
-openai_api_key = st.text_input("OpenAI API Key", type="password")
+openai_api_key = st.text_input("OpenAI API-Schlüssel", type="password")
 if not openai_api_key:
-    st.info("Please add your OpenAI API key to continue.", icon="🗝️")
+    st.info(" Gib bitte deinen OpenAI API-Schlüssel ein.", icon="🗝️")
 else:
-
     # Create an OpenAI client.
     client = OpenAI(api_key=openai_api_key)
 
     # Create a session state variable to store the chat messages. This ensures that the
     # messages persist across reruns.
     if "messages" not in st.session_state:
-        st.session_state.messages = []
+        st.session_state.messages = [
+            {
+                "role": "assistant",
+                "content": "Frag mich etwas über DIGITAL@School!",
+            },
+            {
+                "role": "user",
+                "content": "Ich bin der Nutzer.",
+            }
+        ]
 
     # Display the existing chat messages via `st.chat_message`.
     for message in st.session_state.messages:
@@ -32,7 +41,7 @@ else:
 
     # Create a chat input field to allow the user to enter a message. This will display
     # automatically at the bottom of the page.
-    if prompt := st.chat_input("What is up?"):
+    if prompt := st.chat_input("Gib hier deinen Prompt ein."):
 
         # Store and display the current prompt.
         st.session_state.messages.append({"role": "user", "content": prompt})
